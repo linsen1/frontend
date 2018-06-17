@@ -8,5 +8,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Route;
 
-
+//微信登录验证
 Route::post('/wxlogin/clientCode','weixinController@OnlyGetOpenID');
+
+Route::post('/regUser','UserController@addUsers');
