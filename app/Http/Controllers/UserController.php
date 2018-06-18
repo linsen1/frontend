@@ -48,6 +48,16 @@ class UserController extends  Controller
             return true;
         }
     }
+    public  function  getExitUser($openID){
+        $count=DB::table('users')->where('openId',$openID)->count();
+        if($count>0) {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
     public  function  InsertUser($userInfo){
         $result=DB::table('users')->insert([
             'openId'=>$userInfo['openId'],

@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/backend/addresource', function () {
+    return view('backend.addresource');
 });
