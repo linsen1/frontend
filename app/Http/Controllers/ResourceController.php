@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage;
 use App\commonHelper\fileHelper;
+use App\commonHelper\SMSHelper;
 use Illuminate\Support\Facades\DB;
 
 class ResourceController extends  Controller
@@ -28,11 +29,14 @@ class ResourceController extends  Controller
         ]);
 
         $uploadFile=new fileHelper();
-        //上传封面图片至腾讯存储空间
+        //上传封面图片至腾讯存储空间，上传本地获取文件名
         $filename=$uploadFile->upfile($request->file("bigImgUrl"));
-        $filePath=Storage::disk('upload')->get($filename);
+        //$filePath=Storage::disk('upload')->get($filename); 上传文件流
+        $filePath=Storage_path('app/uploads/'.$filename);
         $fileFolder='resouce/'.date('Y-m-d');
-        $uploadFile->upTxCos($filePath,$filename,$fileFolder);
+        $uploadFile->upTxCos($filePath,$filename,$fileFolder);//上传到腾讯云
+        $uploadFile->upBaiduCos($filePath,$filename,$fileFolder);//上传到百度云
+        $uploadFile->upAliCos($filePath,$filename,$fileFolder);//上传到阿里云
         //获取封面图片文件路径
         $fileCurrentUrl=config('appkey.txFrontend.Cos_Host').$fileFolder.'/'.$filename;
         $title=$request->input("title");
@@ -57,7 +61,7 @@ class ResourceController extends  Controller
             'created_at'=>$created_at,
             'updated_at'=>$updated_at
         ]);
-        return response()->json($result);
+        return response()->json($filePath);
         // return $this->upTxCos($file);
     }
     //读取资源列表
@@ -69,5 +73,10 @@ class ResourceController extends  Controller
     public  function  getResourceInfo($id){
         $info=DB::table("resouces")->where('id','=',$id)->first();
         return response()->json($info);
+    }
+    public  function  sendCode($phone){
+        $sendinfo=new SMSHelper();
+        $infos=$sendinfo->sendSmsCode($phone);
+        return response()->json($infos);
     }
 }

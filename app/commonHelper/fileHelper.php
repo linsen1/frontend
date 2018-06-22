@@ -10,6 +10,14 @@ namespace App\commonHelper;
 use Qcloud\Cos\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+include 'BaiduBce.phar';
+use BaiduBce\BceClientConfigOptions;
+use BaiduBce\Util\Time;
+use BaiduBce\Util\MimeTypes;
+use BaiduBce\Http\HttpHeaders;
+use BaiduBce\Services\Bos\BosClient;
+use OSS\OssClient;
+use OSS\Core\OssException;
 
 class fileHelper
 {
@@ -25,7 +33,7 @@ class fileHelper
             $result = $cosClient->putObject(array(
                 'Bucket' =>config('appkey.txFrontend.COS_Bucket'),
                 'Key' =>$fileFolder.'/'.$filename,
-                'Body' =>$fileinfo));
+                'Body' =>fopen($fileinfo,'rb')));
             $resultinfo=array(
                 "code"=>1,
                 "msg"=>'上传成功');
@@ -65,4 +73,38 @@ class fileHelper
         }
     }
 
+    public  function upBaiduCos($fileinfo,$filename,$fileFolder)
+    {
+        $BOS_TEST_CONFIG =
+            array(
+            'credentials' => array(
+                'accessKeyId' => config('appkey.baiduCos.AccessKey'),
+                'secretAccessKey' =>config('appkey.baiduCos.SecretKey')
+            ),
+            'endpoint' => 'http://bj.bcebos.com',
+        );
+        $upfile=new BosClient($BOS_TEST_CONFIG);
+        $buckName=config('appkey.baiduCos.bucketName');
+        $fileKey=$fileFolder.'/'.$filename;
+        $upfile->putObjectFromFile($buckName,$fileKey,$fileinfo);
+    }
+
+    //fileinfo 本地文件路径  filename  key 文件名  filefolder 文件夹名
+    public  function  upAliCos($fileinfo,$filename,$fileFolder){
+
+        $accessKeyId = config('appkey.aliCos.AccessKeyID');
+        $accessKeySecret = config('appkey.aliCos.AccessKeySecret');
+        $endpoint = config('appkey.aliCos.endpoint');
+//您拥有的Bucket的名称。
+        $bucket=config('appkey.aliCos.bucketName');
+        $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+        $fileKey=$fileFolder.'/'.$filename;
+//您要创建的Object的名称。
+        try{
+            $ossClient->uploadFile($bucket, $fileKey,$fileinfo);
+            return response('success');
+        } catch(OssException $e) {
+            return $e;
+        }
+    }
 }

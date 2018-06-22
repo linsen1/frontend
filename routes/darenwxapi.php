@@ -23,3 +23,5 @@ Route::post('/addresource','ResourceController@addresource');
 Route::get('/getresourcelist','ResourceController@getResourceList');
 //获取资源详情
 Route::get('/getresource/{id}','ResourceController@getResourceInfo');
+//发送短信验证码
+Route::get('/sendcode/{phone}','ResourceController@sendCode');

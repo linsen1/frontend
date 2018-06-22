@@ -14,3 +14,7 @@
 Route::get('/backend/addresource', function () {
     return view('backend.addresource');
 });
+Route::get('/bcakend/resourcelist',function(){
+    $resoucelist=DB::table('resouces')->select('id', 'title','type','about','created_at')->orderBy('id','desc')->paginate(20);
+    return view('backend.resourcelist',['resoucelist'=>$resoucelist]);
+});
