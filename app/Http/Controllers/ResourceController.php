@@ -66,7 +66,7 @@ class ResourceController extends  Controller
     }
     //读取资源列表
     public  function  getResourceList(){
-        $info=DB::table('resouces')->select('id', 'title','type','about','created_at')->orderBy('id','desc')->paginate(5);
+        $info=DB::table('resouces')->select('id', 'title','bigImgUrl','type','about','created_at')->orderBy('id','desc')->paginate(5);
         return response()->json($info,200);
     }
     //查看资源详情
