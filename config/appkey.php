@@ -22,12 +22,14 @@ return[
     'baiduCos'=>[
         'AccessKey'=>'6b1da7df16e04bdaa218dc2e2255c5b1',
         'SecretKey'=>'e26877cb6edb48aeaa86920d7ccf9e0f',
-        'bucketName'=>'frontendsite'
+        'bucketName'=>'frontendsite',
+        'Cos_Host'=>'https://d.qianduandaren.com/'
     ],
     'aliCos'=>[
         'AccessKeyID'=>'LTAIbNCfgdtwAsAv',
         'AccessKeySecret'=>'KjkKOo62e1u5z59BDoQbuxziopyqUf',
         'bucketName'=>'darensite',
-        'endpoint'=>'http://oss-cn-qingdao.aliyuncs.com'
+        'endpoint'=>'http://oss-cn-qingdao.aliyuncs.com',
+        'Cos_Host'=>'https://alifile.qianduandaren.cn/'
     ]
 ];

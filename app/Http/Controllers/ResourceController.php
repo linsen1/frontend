@@ -61,7 +61,11 @@ class ResourceController extends  Controller
             'created_at'=>$created_at,
             'updated_at'=>$updated_at
         ]);
-        return response()->json($filePath);
+        if($result){
+            return redirect('/bcakend/resourcelist');
+        }else {
+            return response()->json($result);
+        }
         // return $this->upTxCos($file);
     }
     //读取资源列表
@@ -74,9 +78,68 @@ class ResourceController extends  Controller
         $info=DB::table("resouces")->where('id','=',$id)->first();
         return response()->json($info);
     }
+    //发送短信验证码
     public  function  sendCode($phone){
         $sendinfo=new SMSHelper();
         $infos=$sendinfo->sendSmsCode($phone);
         return response()->json($infos);
+    }
+    //删除资源
+    public  function  delResourceInfo($id){
+        $result=DB::table('resouces')->where('id','=',$id)->delete();
+        if($result==1){
+            return redirect('/bcakend/resourcelist');
+        }else{
+            return response()->json($result);
+        }
+    }
+    //编辑资源
+    public  function  updateResourceInfo(Request $request,$id){
+        $this->validate($request, [
+            'bigImgUrl' => 'required',
+            'title'=>'required',
+            'type'=>'required'
+        ]);
+        $uploadFile=new fileHelper();
+        //上传封面图片至腾讯存储空间，上传本地获取文件名
+        $filename=$uploadFile->upfile($request->file("bigImgUrl"));
+        //$filePath=Storage::disk('upload')->get($filename); 上传文件流
+        $filePath=Storage_path('app/uploads/'.$filename);
+        $fileFolder='resouce/'.date('Y-m-d');
+        $uploadFile->upTxCos($filePath,$filename,$fileFolder);//上传到腾讯云
+        $uploadFile->upBaiduCos($filePath,$filename,$fileFolder);//上传到百度云
+        $uploadFile->upAliCos($filePath,$filename,$fileFolder);//上传到阿里云
+        //获取封面图片文件路径
+        $fileCurrentUrl=config('appkey.txFrontend.Cos_Host').$fileFolder.'/'.$filename;
+        $title=$request->input("title");
+        $type=$request->input("type");
+        $bigImgUrl=$fileCurrentUrl;
+        $onelineUrl=$request->input("onelineUrl");
+        $downURLBaidu=$request->input("downURLBaidu");
+        $downUrlTX=$request->input("downUrlTX");
+        $about=$request->input("about");
+        $conetent=$request->input("conetent");
+        $updated_at=date("Y-m-d H:i:s",time());
+        $result=DB::table("resouces")->where("id",$id)->update(
+            [
+                'title'=>$title,
+                'type'=>$type,
+                'bigImgUrl'=>$bigImgUrl,
+                'onelineUrl'=>$onelineUrl,
+                'downURLBaidu'=>$downURLBaidu,
+                'downUrlTX'=>$downUrlTX,
+                'about'=>$about,
+                'conetent'=>$conetent,
+                'updated_at'=>$updated_at
+            ]
+        );
+        if($result==1){
+            return redirect('/bcakend/resourcelist');
+        }
+        else
+        {
+            return response()->json($result);
+        }
+
     }
 }
