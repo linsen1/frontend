@@ -73,7 +73,7 @@ class UserController extends  Controller
         ]);
     }
     public  function  UpdateUserInfo($userInfo){
-        date_default_timezone_set("Asia/Chongqing");
+
         $result=DB::table('users')
             ->where('openId', $userInfo['openId'])
             ->update([
