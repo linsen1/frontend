@@ -105,7 +105,7 @@ class ResourceController extends  Controller
         $filename=$uploadFile->upfile($request->file("bigImgUrl"));
         //$filePath=Storage::disk('upload')->get($filename); 上传文件流
         $filePath=Storage_path('app/uploads/'.$filename);
-        $fileFolder='resouce/'.date('Y-m-d');
+        $fileFolder='resouce/'.date('Y-m');
         $uploadFile->upTxCos($filePath,$filename,$fileFolder);//上传到腾讯云
         $uploadFile->upBaiduCos($filePath,$filename,$fileFolder);//上传到百度云
         $uploadFile->upAliCos($filePath,$filename,$fileFolder);//上传到阿里云
